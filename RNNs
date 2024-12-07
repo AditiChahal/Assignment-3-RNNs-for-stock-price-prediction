@@ -127,3 +127,29 @@ gru_mse, gru_predictions = evaluate_model(gru_model, X_test, y_test)
 print(f"RNN MSE: {rnn_mse}")
 print(f"LSTM MSE: {lstm_mse}")
 print(f"GRU MSE: {gru_mse}")
+
+# Looping through each feature to plot actual vs predicted values via all models
+# Each feature will have separate graph
+for i, label in enumerate(labels):
+  for step in range(future_steps):
+    plt.figure(figsize=(14, 7))
+
+    # First, plotting actual values for features as black line
+    y_test_reshaped = y_test.reshape(-1, future_steps, 4)
+    plt.plot(scaler.inverse_transform(y_test_reshaped[:, step, :])[:, i], label=f'Actual {label} (Step {step + 1})', color='black')
+
+    # Next, plotting predicted values from all models for same feature
+    for model_name, predictions in predictions_dict.items():
+      predictions_reshaped = predictions.reshape(-1, future_steps, 4)
+      plt.plot(scaler.inverse_transform(predictions_reshaped[:, step, :])[:, i], label=f'{model_name} Predictions {label} (Step {step + 1})')
+    
+    # Setting plot title and labels
+    plt.title(f'Stock Price Prediction for {label} (Step {step + 1})')
+    plt.xlabel('Time')
+    plt.ylabel('Price')
+
+    # Displaying legend for actual and predicted values from different models for clarity
+    plt.legend()
+
+    # Show the plot/graph
+    plt.show()
